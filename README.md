@@ -1,117 +1,160 @@
-# Fake Job Posting Detection System
+# JobGuard-ML
 
-**Portfolio maintainer: Arpit Gupta | M.Tech Computer Science and Engineering**
+**Machine Learning and NLP for Job Posting Fraud Detection**
 
-![Python](https://img.shields.io/badge/Python-3.10-3776AB?logo=python&logoColor=white)
-![NLP](https://img.shields.io/badge/NLP-TF--IDF-2563EB)
-![Scikit-learn](https://img.shields.io/badge/Scikit--learn-ML-F7931E?logo=scikitlearn&logoColor=white)
-![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-FF4B4B?logo=streamlit&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.10-blue?logo=python&logoColor=white)
+![Scikit-learn](https://img.shields.io/badge/Scikit--learn-Machine%20Learning-orange?logo=scikitlearn&logoColor=white)
+![NLP](https://img.shields.io/badge/NLP-TF--IDF-blueviolet)
+![Streamlit](https://img.shields.io/badge/Streamlit-Web%20App-red?logo=streamlit&logoColor=white)
 
 ## Overview
 
-A machine learning and natural language processing (NLP) application that classifies job postings as potentially fraudulent or legitimate based on text and structured job information. The Streamlit interface displays a model-estimated fraud probability and classification.
+JobGuard-ML is a binary classification application that analyzes job advertisements for potential fraud. It combines natural language processing with structured employment information to produce a predicted classification and an estimated fraud probability through an interactive Streamlit interface.
 
-This portfolio project extends my practical experience with an existing open-source ML pipeline, including local model retraining and compatibility troubleshooting.
+The objective is to explore how supervised learning can support preliminary screening of suspicious job listings while accounting for imbalanced classes and false alarms.
 
-## Features
+## Key Features
 
-- Job posting input form with title, description, requirements and additional details.
-- Text preprocessing and TF-IDF feature extraction.
-- Binary classification using classical machine learning algorithms.
-- Fraud probability and confidence display.
-- Model comparison and evaluation reports.
+- Interactive form for entering job advertisement details.
+- NLP-based text cleaning and numerical feature extraction.
+- Combined textual and structured job attributes.
+- Comparison of multiple supervised classification algorithms.
+- Class-imbalance handling and hyperparameter search.
+- Prediction interface with estimated fraud probability.
+- Evaluation reports, ROC curves, confusion matrices and feature importance plots.
 
-## Dataset
+## System Architecture
 
-The included demonstration dataset is synthetic and follows the structure of the Kaggle Real or Fake? Fake Job Posting Prediction dataset. The reference dataset contains approximately 17,880 postings, with approximately 866 labeled fraudulent; these figures describe the reference dataset, not a new evaluation of my local model.
-
-[Reference dataset (Kaggle)](https://www.kaggle.com/datasets/shivamb/real-or-fake-fake-jobposting-prediction)
-
-The target column is `fraudulent`: `0` = legitimate and `1` = fraudulent.
-
-The default synthetic dataset is suitable for demonstrating the pipeline, not establishing real-world fraud detection accuracy. The original documentation identifies the reference dataset license as CC0; review `data/DATA_SOURCE.md` and the dataset terms before redistribution.
-
-## Machine Learning Workflow
-
-1. Clean job posting text, including lowercasing and removal of unnecessary text elements.
-2. Convert text into numerical features using TF-IDF and combine them with structured features.
-3. Split data into stratified training and testing sets.
-4. Train and compare models, including Logistic Regression, Naive Bayes, Random Forest, Linear SVM and XGBoost. The pipeline includes class weighting and SMOTE variants for class imbalance.
-5. Evaluate precision, recall, F1-score, accuracy, ROC-AUC and confusion matrices.
-6. Save the trained model, vectorizer and preprocessing objects for inference.
-7. Display the classification in a Streamlit interface.
-
-The original implementation selects tuned Logistic Regression with TF-IDF. The locally retrained model should be checked against the generated comparison report before claiming specific results.
+```mermaid
+flowchart TD
+    A[Job posting dataset] --> B[Data preprocessing]
+    B --> C[Stratified train and test split]
+    C --> D[Text and structured feature extraction]
+    D --> E[Model training and tuning]
+    E --> F[Evaluation reports]
+    E --> G[Saved Logistic Regression and preprocessing artifacts]
+    H[Streamlit job input] --> I[Prediction preprocessing]
+    I --> J[Model inference]
+    G --> J
+    J --> K[Classification and fraud probability]
+```
 
 ## Technology Stack
 
-Python, Pandas, NumPy, Scikit-learn, NLP, TF-IDF, imbalanced-learn, XGBoost, Joblib and Streamlit.
+| Area | Technologies |
+| --- | --- |
+| Language | Python |
+| Data processing | Pandas, NumPy |
+| Text representation | TF-IDF, CountVectorizer |
+| Machine learning | Scikit-learn, XGBoost |
+| Imbalanced learning | imbalanced-learn, SMOTE |
+| Model persistence | Joblib |
+| User interface | Streamlit |
 
-## Project Structure
+## Dataset
+
+The demonstration uses generated job advertisements with a schema inspired by the [Real or Fake? Fake Job Posting Prediction dataset](https://www.kaggle.com/datasets/shivamb/real-or-fake-fake-jobposting-prediction) published by Shivam Bansal on Kaggle.
+
+Inputs include job titles, descriptions, qualifications, company information and employment attributes. The target variable is `fraudulent`, with `0` representing a legitimate listing and `1` representing a fraudulent listing.
+
+The bundled synthetic data is intended for experimentation. It should not be confused with the original real-world dataset. See [dataset documentation](data/DATA_SOURCE.md) for source and licensing information.
+
+## Machine Learning Pipeline
+
+The training script uses a stratified 80:20 training/test split. Text vectorizers and feature scaling are fitted using the training partition. SMOTE is applied to a training-data variant, and class weighting is used in several models to address the minority fraud class.
+
+| Algorithm | Role in the pipeline |
+| --- | --- |
+| Logistic Regression | TF-IDF classification baseline and tuned deployment model |
+| Multinomial Naive Bayes | Count-based text classification baseline |
+| Random Forest | Tree-ensemble comparison |
+| Linear SVM | Linear classifier with probability calibration |
+| XGBoost | Boosted-tree comparison |
+
+Randomized hyperparameter search is included for Logistic Regression and XGBoost. The training script exports the tuned Logistic Regression estimator with its associated vectorizer, scaler and structured feature configuration for inference.
+
+## Model Evaluation
+
+The evaluation pipeline measures accuracy, precision, recall, F1-score and ROC-AUC. Fraud-class recall measures how many fraudulent listings are detected; precision reflects how many flagged listings actually belong to the fraud class.
+
+The checked-in [model comparison report](reports/model_comparison.csv) records perfect scores on the demonstration data. These are synthetic-data results, not evidence of perfect real-world detection. Independent validation on authentic job advertisements is needed before drawing practical performance conclusions.
+
+Additional plots and reports are stored in the [`reports/`](reports/) directory.
+
+## Repository Structure
 
 ```text
-app/
-  app.py                    # Streamlit interface
-src/
-  preprocess.py             # Text preprocessing
-  features.py               # Feature extraction
-  train.py                  # Model training
-  evaluate.py               # Evaluation metrics
-  predict.py                # Inference
-  eda.py                    # Exploratory data analysis
-  generate_synthetic_data.py # Demo dataset generation
-  download_data.py          # Reference dataset downloader
-data/                       # Dataset and source information
-models/                     # Serialized model and preprocessing artifacts
-reports/                    # Evaluation reports and charts
-requirements.txt            # Dependencies
-README.md                   # Project documentation
+JobGuard-ML/
+├── app/
+│   └── app.py
+├── data/
+│   ├── fake_job_postings.csv
+│   └── DATA_SOURCE.md
+├── models/
+├── reports/
+├── src/
+│   ├── download_data.py
+│   ├── eda.py
+│   ├── evaluate.py
+│   ├── features.py
+│   ├── generate_synthetic_data.py
+│   ├── predict.py
+│   ├── preprocess.py
+│   └── train.py
+├── requirements.txt
+└── README.md
 ```
 
-## Installation and Execution
+## Installation and Usage
 
-Open the project root containing `app/`, `src/` and `requirements.txt` in VS Code. The following commands are for Windows PowerShell.
-
-### One-time environment setup
-
-If the shared `mlenv` environment already exists, skip its creation.
+### 1. Clone the repository
 
 ```powershell
-python -m venv "$env:USERPROFILE\mlenv"
-& "$env:USERPROFILE\mlenv\Scripts\python.exe" -m pip install -r requirements.txt
+git clone https://github.com/kannuharpit/JobGuard-ML.git
+cd JobGuard-ML
 ```
 
-### Train the model locally
+### 2. Set up the Python environment
 
-Use the included demo dataset, or generate it using `src/generate_synthetic_data.py` if needed. Retrain locally to avoid incompatibilities between saved models and the installed Scikit-learn version.
+The following commands are for Windows PowerShell. Python 3.10 was used for local testing.
 
 ```powershell
-& "$env:USERPROFILE\mlenv\Scripts\python.exe" src/train.py
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
-The local environment used Python 3.10 and Scikit-learn 1.7.2. The downloaded model was serialized with a different Scikit-learn version. Only load serialized model files from trusted sources.
-
-### Launch the application
+### 3. Train the model
 
 ```powershell
-& "$env:USERPROFILE\mlenv\Scripts\python.exe" -m streamlit run app/app.py
+.\.venv\Scripts\python.exe src/train.py
 ```
 
-Open <http://localhost:8501>. Press `Ctrl+C` in the terminal to stop the application. Retraining is not required for each launch if compatible model artifacts already exist.
+If the demo dataset is missing, run `src/generate_synthetic_data.py` before training. Retrain when serialized model artifacts are incompatible with the installed Scikit-learn version. Only load trusted Joblib or pickle files.
 
-## My Contributions — Arpit Gupta
+### 4. Launch the application
 
-- Configured the local Python environment and installed NLP and ML dependencies.
-- Diagnosed a Scikit-learn version mismatch that caused the original serialized Logistic Regression model to fail during prediction.
-- Retrained the model locally and successfully ran the Streamlit prediction interface.
-- Tested sample job descriptions and identified a possible false positive on a legitimate-looking software developer posting.
-- Updated documentation to explain the setup, compatibility issue and current limitations.
+```powershell
+.\.venv\Scripts\python.exe -m streamlit run app/app.py
+```
 
-## Limitations and Planned Improvements
+Visit [http://localhost:8501](http://localhost:8501) in your browser. Enter the job information and submit the form to view the predicted label and estimated probability.
 
-- The demonstration model uses synthetic training data and is not validated for real-world job screening.
-- False positives and false negatives are possible; the displayed probability is a model estimate, not proof that a job is fraudulent.
-- Train and evaluate on the real reference dataset, with a held-out test split.
-- Examine precision, recall and confusion matrices, and tune the classification threshold.
-- Improve testing across realistic job descriptions and avoid treating remote work or missing fields as proof of fraud.
+## Technical Contributions
+
+**Repository maintainer: Arpit Gupta — M.Tech, Computer Science and Engineering**
+
+- Reproduced the existing ML workflow in a local Python environment.
+- Investigated serialized-estimator compatibility problems with Scikit-learn.
+- Retrained the classifier and verified the Streamlit prediction workflow locally.
+- Examined prediction behavior on sample advertisements, including a possible false positive.
+- Improved reproducibility through updated execution and troubleshooting documentation.
+
+## Limitations and Future Work
+
+- Evaluate the classifier on a real-world dataset using an independent holdout set.
+- Investigate false positives and false negatives using realistic postings.
+- Select an operating threshold based on the precision–recall trade-off.
+- Assess generalization to unfamiliar employers, industries and writing styles.
+
+A model prediction is a screening signal, not proof of fraud. The application is a demonstration and should not be used as the sole basis for employment decisions.
 
