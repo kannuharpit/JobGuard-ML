@@ -1,0 +1,9 @@
+.DS_Store
+.venv/
+venv/
+mlenv/
+__pycache__/
+*.pyc
+.env
+kaggle.json
+secrets.toml

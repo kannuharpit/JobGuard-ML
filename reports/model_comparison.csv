@@ -1,0 +1,9 @@
+Model,Accuracy,Precision,Recall,F1,ROC-AUC
+Logistic Regression,1.0,1.0,1.0,1.0,1.0
+Logistic Regression [SMOTE],1.0,1.0,1.0,1.0,1.0
+Naive Bayes (Count),1.0,1.0,1.0,1.0,1.0
+Random Forest,1.0,1.0,1.0,1.0,1.0
+Linear SVM,1.0,1.0,1.0,1.0,1.0
+XGBoost,1.0,1.0,1.0,1.0,1.0
+Logistic Regression (Tuned),1.0,1.0,1.0,1.0,1.0
+XGBoost (Tuned),1.0,1.0,1.0,1.0,1.0
